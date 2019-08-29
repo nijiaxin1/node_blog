@@ -2,6 +2,8 @@ const url = require('url')
 const querystring = require('querystring')
 const {SuccessModel, ErrorModel} = require('../model/resultModel')
 const {loginCheck} = require('../controller/user')
+
+
 const handleUserRouter = (req, resp) => {
     const method = req.method
     const urlObj = url.parse(req.url)
@@ -9,15 +11,19 @@ const handleUserRouter = (req, resp) => {
 
 
     if (method === 'POST' && pathname === '/api/user/login') {
+
         const {username, password} = req.body
         const result = loginCheck(username, password)
-        return result.then(data=>{
-            if(data.username){
+        return result.then(data => {
+            if (data.username) {
+                req.session.username = data.username
+                req.session.realname = data.realname
                 return new SuccessModel();
             }
             return new ErrorModel("登陆失败")
         })
     }
+
 
     if (method === 'GET' && pathname === '/api/user/list') {
         return {
